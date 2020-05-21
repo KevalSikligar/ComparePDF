@@ -1,0 +1,7 @@
+F:\PDF_Compare_service\PDF_Compare_Tool\PDF_Compare_Tool\bin\Debug\PDF_Compare_Tool.exe.config
+F:\PDF_Compare_service\PDF_Compare_Tool\PDF_Compare_Tool\bin\Debug\PDF_Compare_Tool.exe
+F:\PDF_Compare_service\PDF_Compare_Tool\PDF_Compare_Tool\bin\Debug\PDF_Compare_Tool.pdb
+F:\PDF_Compare_service\PDF_Compare_Tool\PDF_Compare_Tool\obj\Debug\PDF_Compare_Tool.csprojAssemblyReference.cache
+F:\PDF_Compare_service\PDF_Compare_Tool\PDF_Compare_Tool\obj\Debug\PDF_Compare_Tool.csproj.CoreCompileInputs.cache
+F:\PDF_Compare_service\PDF_Compare_Tool\PDF_Compare_Tool\obj\Debug\PDF_Compare_Tool.exe
+F:\PDF_Compare_service\PDF_Compare_Tool\PDF_Compare_Tool\obj\Debug\PDF_Compare_Tool.pdb
