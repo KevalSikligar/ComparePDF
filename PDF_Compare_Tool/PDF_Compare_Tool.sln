@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.28307.168
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PDF_Compare_Tool", "PDF_Compare_Tool\PDF_Compare_Tool.csproj", "{B4B2602E-E372-4D79-850C-521ED7344D74}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "ComparePDFSetup", "ComparePDFSetup\ComparePDFSetup.vdproj", "{108B3A77-0350-4496-AAE3-0C752FB627CA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,8 @@ Global
 		{B4B2602E-E372-4D79-850C-521ED7344D74}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B4B2602E-E372-4D79-850C-521ED7344D74}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B4B2602E-E372-4D79-850C-521ED7344D74}.Release|Any CPU.Build.0 = Release|Any CPU
+		{108B3A77-0350-4496-AAE3-0C752FB627CA}.Debug|Any CPU.ActiveCfg = Debug
+		{108B3A77-0350-4496-AAE3-0C752FB627CA}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

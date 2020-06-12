@@ -11,5 +11,7 @@ namespace PDF_Compare_Tool.ViewModel
         public string Word { get; set; }
         public int PageNo { get; set; }
         public  int PositionNo { get; set; }
+
+        public char Color { get; set; }
     }
 }

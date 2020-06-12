@@ -34,13 +34,23 @@ namespace PDF_Compare_Tool
             CordsModel cords = new CordsModel();
 
             TextInfo info = new TextInfo();
-           
 
-            var inputFile1 = @"F:\Testfiles\bill1.pdf";
-            var inputFile2 = @"F:\Testfiles\bill2.pdf";
+            Console.Write("\n Enter First PDF File Name \n");
+            string str1 = Console.ReadLine();
 
 
-          //  PDFToImage(@"F:\Testfiles\50page.pdf", @"F:\Testfiles\PDFImages", 100);
+            Console.Write("\n Enter Second PDF File Name \n");
+            string str2 = Console.ReadLine();
+
+            var inputFile1 = @"F:\Testfiles\"+str1;
+            var inputFile2 = @"F:\Testfiles\"+str2;
+
+
+
+
+
+
+            //  PDFToImage(@"F:\Testfiles\50page.pdf", @"F:\Testfiles\PDFImages", 100);
 
             var executableFolderPath = System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
             string PDF1Folder = executableFolderPath + @"\PDFData\PDF1";
@@ -179,16 +189,13 @@ namespace PDF_Compare_Tool
                 {
                     if (i < b)
                     {
-                       // for (int j = 0; j < FirstFilePages.Count; j++)
-                      //  {
-                            // Console.Write("fisrt page of 1 2 file");
+                       
                             CompareWords(FirstFilePages[i].Lines, SecondFilePages[i].Lines, (i + 1));
-                           // a--;
-                       // }
+                          
                     }
                     else
                     {
-                        //Console.Write("second page of 1  file");
+                        
                         CompareWords(FirstFilePages[i].Lines, "", (i + 1));
                     }
                 }
@@ -197,20 +204,16 @@ namespace PDF_Compare_Tool
             if (FirstFilePages.Count < SecondFilePages.Count)
             {
                 for (int i = 0; i < SecondFilePages.Count; i++)
-                {//
+                {
                     if (i < a)
                     {
-                       // for (int j = 0; j <= i; j++)
-                        //{
-
-                            // Console.Write("fisrt page of 1 2 file");
+                       
                             CompareWords(FirstFilePages[i].Lines, SecondFilePages[i].Lines, (i + 1));
-                           // b--;
-                      //  }
+                          
                     }
                     else
                     {
-                        //Console.Write("second page of 2  file");
+                        
                         CompareWords("", SecondFilePages[i].Lines, (i + 1));
                     }
                 }
@@ -220,10 +223,9 @@ namespace PDF_Compare_Tool
             {
                 for (int i = 0; i < FirstFilePages.Count; i++)
                 {
-                  //  for (int j = 0; j <= i; j++)
-                  // {
+                  
                         CompareWords(FirstFilePages[i].Lines, SecondFilePages[i].Lines, (i + 1));
-                    //}
+                   
                 }
             }
 
@@ -240,36 +242,21 @@ namespace PDF_Compare_Tool
             List<string> file1=new List<string>(); //= FirstFile.Trim().Split('\r', '\n');
             List<string> file2=new List<string>(); //= SecondFile.Trim().Split('\r', '\n');
 
-            
-          
 
 
-            string[] words = FirstFile.Split('\n');
-            string line;
-            for (int j = 0, len = words.Length; j < len; j++)
-            {
-                line = Encoding.UTF8.GetString(Encoding.UTF8.GetBytes(words[j]));
-                file1.Add(line);
-            }
+            string[] lines = FirstFile.Split(new[] { "\r\n", "\r", "\n" },StringSplitOptions.RemoveEmptyEntries);
 
 
+            string[] lines2 = SecondFile.Split(new[] { "\r\n", "\r", "\n" },StringSplitOptions.RemoveEmptyEntries);
 
-            string[] words2 = SecondFile.Split('\n');
-            string line2;
-            for (int j = 0, len = words2.Length; j < len; j++)
-            {
-                line2 = Encoding.UTF8.GetString(Encoding.UTF8.GetBytes(words2[j]));
-
-                
-                file2.Add(line2);
-            }
+         
 
 
-            File1diff = file1.ToList();
-            File2diff = file2.ToList();
-           // List<List<int>> file1List= findLine(File1diff, File2diff);
-            //List<List<int>> file2List = findLine(File2diff, File1diff);
-
+            File1diff = lines.ToList();
+            File2diff = lines2.ToList();
+         
+            file1= lines.ToList();
+            file2= lines2.ToList();
 
 
             if (file1.Count() == file2.Count()  )
@@ -314,7 +301,12 @@ namespace PDF_Compare_Tool
                                     int Fil2WordPosition = wordPosition(File2WordList[k], FindPositionList2.Count, FindPositionList2);
                                     // Console.WriteLine("posi 1 =" + Fil1WordPosition);
                                     Console.WriteLine("posi 2 =" + Fil2WordPosition);
-                                    highlightPDF2.Add(new HighlightViewModel() { Word = File2WordList[k], PageNo = page, PositionNo = Fil2WordPosition });
+
+
+                                int position = FindPositionList2.Where(s => s != null && s.Contains(File2WordList[k]) && s.Length == File2WordList[k].Length).Count();
+
+
+                                highlightPDF2.Add(new HighlightViewModel() { Word = File2WordList[k], PageNo = page, PositionNo = position,Color='Y' });
 
 
                                      }
@@ -324,8 +316,14 @@ namespace PDF_Compare_Tool
                                         FindPositionList1.Add(File1WordList[k]);
                                          FindPositionList2.Add(File2WordList[k]);
                                 int Fil1WordPosition = wordPosition(File1WordList[k], FindPositionList1.Count, FindPositionList1);
-                                     
-                                highlightPDF1.Add(new HighlightViewModel() { Word = File1WordList[k], PageNo = page, PositionNo = Fil1WordPosition });
+
+                                int position = FindPositionList1.Where(s => s != null && s.Contains(File1WordList[k]) && s.Length == File1WordList[k].Length).Count();
+
+                                char color='R';
+                                if (File2WordList[k] != "")
+                                    color = 'Y';
+
+                                highlightPDF1.Add(new HighlightViewModel() { Word = File1WordList[k], PageNo = page, PositionNo = position,Color=color });
                                 
 
                             }
@@ -336,14 +334,22 @@ namespace PDF_Compare_Tool
                                         {
                                             FindPositionList2.Add(File2WordList[k]);
                                             int Fil2WordPosition = wordPosition(File2WordList[k], FindPositionList2.Count, FindPositionList2);
-                                            //   Console.WriteLine("posi 1 =" + Fil1WordPosition);
-                                            // Console.WriteLine("posi 2 =" + Fil2WordPosition);
-                                            highlightPDF2.Add(new HighlightViewModel() { Word = File2WordList[k], PageNo = page, PositionNo = Fil2WordPosition });
+                                    //   Console.WriteLine("posi 1 =" + Fil1WordPosition);
+                                    // Console.WriteLine("posi 2 =" + Fil2WordPosition);
+                                    int position2 = FindPositionList2.Where(s => s != null && s.Contains(File2WordList[k]) && s.Length == File2WordList[k].Length).Count();
+
+                                    highlightPDF2.Add(new HighlightViewModel() { Word = File2WordList[k], PageNo = page, PositionNo = position2,Color='Y'
+                                    });
 
                                         }
                                         FindPositionList1.Add(File1WordList[k]);
                                         int Fil1WordPosition = wordPosition(File1WordList[k], FindPositionList1.Count, FindPositionList1);
-                                        highlightPDF1.Add(new HighlightViewModel() { Word = File1WordList[k], PageNo = page, PositionNo = Fil1WordPosition });
+
+                                int position = FindPositionList1.Where(s => s != null && s.Contains(File1WordList[k]) && s.Length == File1WordList[k].Length).Count();
+                                char color = 'R';
+                                if (File2WordList[k] != "")
+                                    color = 'Y';
+                                highlightPDF1.Add(new HighlightViewModel() { Word = File1WordList[k], PageNo = page, PositionNo = position, Color=color });
 
                                         Console.WriteLine("Page = " + page + " Diff word in " + i + " line = " + File1WordList[k] + " and " + File2WordList[k]);
                                     }
@@ -351,6 +357,11 @@ namespace PDF_Compare_Tool
                             
                          
                         }
+
+
+
+
+
                     }
                     else if (File1WordList.Count < File2WordList.Count)
                     {
@@ -378,7 +389,12 @@ namespace PDF_Compare_Tool
                                 int Fil2WordPosition = wordPosition(File2WordList[k], FindPositionList2.Count, FindPositionList2);
                                 // Console.WriteLine("posi 1 =" + Fil1WordPosition);
                                 Console.WriteLine("posi 2 =" + Fil2WordPosition);
-                                highlightPDF2.Add(new HighlightViewModel() { Word = File2WordList[k], PageNo = page, PositionNo = Fil2WordPosition });
+
+                                int position2 = FindPositionList2.Where(s => s != null && s.Contains(File2WordList[k]) && s.Length == File2WordList[k].Length).Count();
+
+
+
+                                highlightPDF2.Add(new HighlightViewModel() { Word = File2WordList[k], PageNo = page, PositionNo = position2,Color='Y' });
 
 
                             }
@@ -388,8 +404,15 @@ namespace PDF_Compare_Tool
                                 FindPositionList1.Add(File1WordList[k]);
                                 FindPositionList1.Add(File1WordList[k]);
                                 int Fil1WordPosition = wordPosition(File1WordList[k], FindPositionList1.Count, FindPositionList1);
-                                
-                                highlightPDF1.Add(new HighlightViewModel() { Word = File1WordList[k], PageNo = page, PositionNo = Fil1WordPosition });
+
+
+                                int position = FindPositionList1.Where(s => s != null && s.Contains(File1WordList[k]) && s.Length == File1WordList[k].Length).Count();
+
+                                char color = 'R';
+                                if (File1WordList[k] != "")
+                                    color = 'Y';
+
+                                highlightPDF1.Add(new HighlightViewModel() { Word = File1WordList[k], PageNo = page, PositionNo = position,Color=color });
 
 
                             }
@@ -400,7 +423,14 @@ namespace PDF_Compare_Tool
                                 {
                                     FindPositionList1.Add(File1WordList[k]);
                                     int Fil1WordPosition = wordPosition(File1WordList[k], FindPositionList1.Count, FindPositionList1);
-                                    highlightPDF1.Add(new HighlightViewModel() { Word = File1WordList[k], PageNo = page, PositionNo = Fil1WordPosition });
+
+                                    int position = FindPositionList1.Where(s => s != null && s.Contains(File1WordList[k]) && s.Length == File1WordList[k].Length).Count();
+
+                                    char color = 'R';
+                                    if (File1WordList[k] != "")
+                                        color = 'Y';
+
+                                    highlightPDF1.Add(new HighlightViewModel() { Word = File1WordList[k], PageNo = page, PositionNo = position,Color=color });
 
                                 }
                                 
@@ -411,7 +441,11 @@ namespace PDF_Compare_Tool
                                 int Fil2WordPosition = wordPosition(File2WordList[k], FindPositionList2.Count, FindPositionList2);
                                 //   Console.WriteLine("posi 1 =" + Fil1WordPosition);
                                 // Console.WriteLine("posi 2 =" + Fil2WordPosition);
-                                highlightPDF2.Add(new HighlightViewModel() { Word = File2WordList[k], PageNo = page, PositionNo = Fil2WordPosition });
+
+                                int position2 = FindPositionList2.Where(s => s != null && s.Contains(File2WordList[k]) && s.Length == File2WordList[k].Length).Count();
+
+
+                                highlightPDF2.Add(new HighlightViewModel() { Word = File2WordList[k], PageNo = page, PositionNo = position2,Color='Y' });
                             }
 
                         }
@@ -437,7 +471,11 @@ namespace PDF_Compare_Tool
                                 int Fil2WordPosition = wordPosition(File2WordList[k], FindPositionList2.Count, FindPositionList2);
                                 // Console.WriteLine("posi 1 =" + Fil1WordPosition);
                                 Console.WriteLine("posi 2 =" + Fil2WordPosition);
-                                highlightPDF2.Add(new HighlightViewModel() { Word = File2WordList[k], PageNo = page, PositionNo = Fil2WordPosition });
+
+                                int position2 = FindPositionList2.Where(s => s != null && s.Contains(File2WordList[k]) && s.Length == File2WordList[k].Length).Count();
+
+
+                                highlightPDF2.Add(new HighlightViewModel() { Word = File2WordList[k], PageNo = page, PositionNo = position2,Color='Y' });
 
 
                             }
@@ -447,8 +485,11 @@ namespace PDF_Compare_Tool
                                 FindPositionList1.Add(File1WordList[k]);
                                 FindPositionList2.Add(File2WordList[k]);
                                 int Fil1WordPosition = wordPosition(File1WordList[k], FindPositionList1.Count, FindPositionList1);
-                                
-                                highlightPDF1.Add(new HighlightViewModel() { Word = File1WordList[k], PageNo = page, PositionNo = Fil1WordPosition });
+
+                                int position = FindPositionList1.Where(s => s != null && s.Contains(File1WordList[k]) && s.Length == File1WordList[k].Length).Count();
+
+
+                                highlightPDF1.Add(new HighlightViewModel() { Word = File1WordList[k], PageNo = page, PositionNo = position,Color='Y' });
 
 
                             }
@@ -457,14 +498,20 @@ namespace PDF_Compare_Tool
                   
                                     FindPositionList2.Add(File2WordList[k]);
                                     int Fil2WordPosition = wordPosition(File2WordList[k], FindPositionList2.Count, FindPositionList2);
-                                    //   Console.WriteLine("posi 1 =" + Fil1WordPosition);
-                                    // Console.WriteLine("posi 2 =" + Fil2WordPosition);
-                                    highlightPDF2.Add(new HighlightViewModel() { Word = File2WordList[k], PageNo = page, PositionNo = Fil2WordPosition });
+                                //   Console.WriteLine("posi 1 =" + Fil1WordPosition);
+                                // Console.WriteLine("posi 2 =" + Fil2WordPosition);
+                                int position2 = FindPositionList2.Where(s => s != null && s.Contains(File2WordList[k]) && s.Length == File2WordList[k].Length).Count();
+
+                                highlightPDF2.Add(new HighlightViewModel() { Word = File2WordList[k], PageNo = page, PositionNo = position2,Color='Y' });
 
                                 
                                 FindPositionList1.Add(File1WordList[k]);
                                 int Fil1WordPosition = wordPosition(File1WordList[k], FindPositionList1.Count, FindPositionList1);
-                                highlightPDF1.Add(new HighlightViewModel() { Word = File1WordList[k], PageNo = page, PositionNo = Fil1WordPosition });
+
+                                int position = FindPositionList1.Where(s => s != null && s.Contains(File1WordList[k]) && s.Length == File1WordList[k].Length).Count();
+
+
+                                highlightPDF1.Add(new HighlightViewModel() { Word = File1WordList[k], PageNo = page, PositionNo = position,Color='Y' });
 
                                 Console.WriteLine("Page = " + page + " Diff word in " + i + " line = " + File1WordList[k] + " and " + File2WordList[k]);
                             }
@@ -797,6 +844,7 @@ namespace PDF_Compare_Tool
                     }
                 }
             }
+
 
             //if (file1.Count() < file2.Count())
             //{
@@ -1341,7 +1389,8 @@ namespace PDF_Compare_Tool
                             FindPositionList2.Add(File2WordList[k]);
                             int Fil1WordPosition = wordPosition(File1WordList[k], FindPositionList1.Count, FindPositionList1);
 
-                            highlightPDF2.Add(new HighlightViewModel() { Word = File1WordList[k], PageNo = page, PositionNo = Fil1WordPosition });
+                            int position = FindPositionList1.Where(s => s != null && s.Contains(File1WordList[k]) && s.Length == File1WordList[k].Length).Count();
+                            highlightPDF2.Add(new HighlightViewModel() { Word = File1WordList[k], PageNo = page, PositionNo = position });
 
 
                         }
@@ -1416,7 +1465,9 @@ namespace PDF_Compare_Tool
                             {
                                 FindPositionList1.Add(File1WordList[k]);
                                 int Fil1WordPosition = wordPosition(File1WordList[k], FindPositionList1.Count, FindPositionList1);
-                                highlightPDF2.Add(new HighlightViewModel() { Word = File1WordList[k], PageNo = page, PositionNo = Fil1WordPosition });
+                                int position = FindPositionList1.Where(s => s != null && s.Contains(File1WordList[k]) && s.Length == File1WordList[k].Length).Count();
+
+                                highlightPDF2.Add(new HighlightViewModel() { Word = File1WordList[k], PageNo = page, PositionNo = position });
 
                             }
 
@@ -1463,8 +1514,9 @@ namespace PDF_Compare_Tool
                             FindPositionList1.Add(File1WordList[k]);
                            // FindPositionList2.Add(File2WordList[k]);
                             int Fil1WordPosition = wordPosition(File1WordList[k], FindPositionList1.Count, FindPositionList1);
+                            int position = FindPositionList1.Where(s => s != null && s.Contains(File1WordList[k]) && s.Length == File1WordList[k].Length).Count();
 
-                            highlightPDF2.Add(new HighlightViewModel() { Word = File1WordList[k], PageNo = page, PositionNo = Fil1WordPosition });
+                            highlightPDF2.Add(new HighlightViewModel() { Word = File1WordList[k], PageNo = page, PositionNo = position });
 
 
                         }
@@ -1506,7 +1558,9 @@ namespace PDF_Compare_Tool
                     FindPositionList1.Add(File1ExtraWord[k]);
                     int Fil1WordPosition = wordPosition(File1ExtraWord[k], FindPositionList1.Count, FindPositionList1);
                     Console.WriteLine("posi 2 =" + Fil1WordPosition);
-                       highlightPDF2.Add(new HighlightViewModel() { Word = File1ExtraWord[k], PageNo = page, PositionNo = Fil1WordPosition });
+                    int position = FindPositionList1.Where(s => s != null && s.Contains(File1ExtraWord[k]) && s.Length == File1ExtraWord[k].Length).Count();
+
+                    highlightPDF2.Add(new HighlightViewModel() { Word = File1ExtraWord[k], PageNo = page, PositionNo = position });
                 }
             }
 
@@ -1685,26 +1739,32 @@ namespace PDF_Compare_Tool
 
 
 
-                    if (count5 > count2 && count5 > count3 && count5 > count4 && count5 > count1  )
+                    if (count1 >= count2 && count1 >= count3 && count1 >= count4 && count1 >= count5  )
                     {
                         file1Index.Add(i);
-                        file2Index.Add(i+2);
+                        file2Index.Add(i);
                     }
-                    else if (count2 > count1 && count2 > count3 && count2 > count4 && count2 > count5)
+                    else if (count4 >= count1 && count4 >= count2 && count4 >= count3 && count4 >= count5)
+                    {
+                        file1Index.Add(i);
+                        file2Index.Add(i + 1);
+                    }
+                    else if (count2 >= count1 && count2 >= count3 && count2 >= count4 && count2 >= count5)
                     {
                         file1Index.Add(i);
                         file2Index.Add(i-1);
                     }
-                    else if (count3 > count1 && count3 > count2 && count3 > count4 && count3 > count5)
+                    else if (count5 >= count2 && count5 >= count3 && count5 >= count4 && count5 >= count1)
+                    {
+                        file1Index.Add(i);
+                        file2Index.Add(i + 2);
+                    }
+                    else if (count3 >= count1 && count3 >= count2 && count3 >= count4 && count3 >= count5)
                     {
                         file1Index.Add(i);
                         file2Index.Add(i-2);
-                    }
-                    else if (count4 > count1 && count4 > count2 && count4 > count3 && count4 > count5)
-                    {
-                        file1Index.Add(i);
-                        file2Index.Add(i+1);
-                    }
+                    }                   
+                  
                     else
                     {
                         file1Index.Add(i);
@@ -1753,32 +1813,38 @@ namespace PDF_Compare_Tool
 
         public static int wordPosition(string word, int lineNumber, List<string> allLines)
         {
+           
 
-            
-            int counter = 0;
-            for (int i = 0;  i < lineNumber; i++)
-            {
-                string temp = allLines[i];
-                    
-             // temp = temp.ToLower();
-                //word = word.ToLower();
-                try
-                {
-                 // var a=  Regex.Match(temp, word, RegexOptions.Singleline);
-                   var a  = string.Equals(temp,word);
 
-                    if (a == true)
-                    {
-                        counter += 1;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    // Console.WriteLine("error "+ word);
-                }
 
-            }
-            return counter;
+
+
+          //  int count = allLines.Where(s => s != null && s.StartsWith(word)&& s.EndsWith(word)&&s.Length==word.Length).Count();
+            int count = allLines.Where(s => s != null && s.Contains(word) && s.Length == word.Length).Count();
+
+            //for (int i = 0;  i < lineNumber; i++)
+            //{
+            //    string temp = allLines[i];
+
+            //  //temp = temp.ToLower();
+            //  // word = word.ToLower();
+            //    try
+            //    {
+            //      var a=  Regex.Match(temp, @"(\w*" + word + @"\w*)");
+            //    //   var a  = string.Equals(temp, @"(?<TM>\w*"+word+@"\w*)", StringComparison.OrdinalIgnoreCase);
+
+            //        if (a.Success)
+            //        {
+            //            counter += 1;
+            //        }
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        // Console.WriteLine("error "+ word);
+            //    }
+
+            //}
+            return count;
         }
 
         #region OldCode
@@ -1938,67 +2004,84 @@ namespace PDF_Compare_Tool
             }
         }
 
-
         public static void HighlightSpire(string inputfile, string outputfile, List<HighlightViewModel> info)
         {
            // inputfile = @"F:\Testfiles\10page.pdf";
             Spire.Pdf.PdfDocument pdf = new Spire.Pdf.PdfDocument(inputfile);
             
-            Spire.Pdf.General.Find.PdfTextFind[] result = null;
+       //  List<Spire.Pdf.General.Find.PdfTextFind> result = null;
+         //   Spire.Pdf.General.Find.PdfTextFind[] result2 = null;
+
+
+
 
             int c = 0;
          for(int i=0;i<info.Count;i++)
             {
-                Console.Write("\n"+c++ + " out of " + info.Count + "in" + outputfile);
-                int count = 0;
 
+             
+
+
+                Console.Write("\n"+c++ + " out of " + info.Count + "in" + outputfile);
+                
+                int count = 0;
+                int position = 0;
+                
                 try
                 {
-                    String word = Regex.Unescape(info[i].Word);
-                    result = pdf.Pages[info[i].PageNo-1].FindText(word, true).Finds;
+                    // String word = Regex.Unescape(info[i].Word);
+                   // List<Spire.Pdf.General.Find.PdfTextFind> result = new List<Spire.Pdf.General.Find.PdfTextFind>();
+                    Spire.Pdf.General.Find.PdfTextFind[] result =pdf.Pages[info[i].PageNo - 1].FindText(info[i].Word, Spire.Pdf.General.Find.TextFindParameter.WholeWord).Finds.ToArray();
+                   //  result = pdf.Pages[info[i].PageNo-1].FindText(info[i].Word, Spire.Pdf.General.Find.TextFindParameter.WholeWord).Finds.ToList();
 
-                if(info[i].PositionNo==0)
-                {
-                    int abc = 0;
-                }
-                foreach (Spire.Pdf.General.Find.PdfTextFind find in result)
+                  List<Spire.Pdf.General.Find.PdfTextFind> result2 = new List<Spire.Pdf.General.Find.PdfTextFind>();
+                    for (int j=0; j< Convert.ToInt32( result.ToList().Count) ;j++)
+                    {
+                        string line = result[j].LineText;
+                        List<string> lineWords = line.Trim().Split(' ', '\t').ToList();
+
+                        int locationCount = lineWords.Where(s => s != null && s.Contains(info[i].Word.Trim()) && s.Length == info[i].Word.Trim().Length).Count();
+                        if (locationCount>0)
+                        {
+                            result2.Add(result[j]);
+                           
+
+                        }
+                    }
+
+
+                 
+
+                foreach (Spire.Pdf.General.Find.PdfTextFind find in result2)
                 {
                     count++;
 
                     if(count== info[i].PositionNo)
-                    find.ApplyHighLight(Color.Red);
+
+                        {
+                            //if (info[i].Color == 'Y')
+                            //find.ApplyHighLight(Color.Yellow);
+                            //else
+                                find.ApplyHighLight(Color.Red);
+
+                        }
+                   
 
                 }
-
+                    
                 }
-                catch
+                catch(Exception ex)
                 {
-                    int abc = 0;
+                   
 
                 }
 
             }
-            //foreach (Spire.Pdf.PdfPageBase page in pdf.Pages)
-                
-            //    {
-                
-            //         result = page.FindText("The",true).Finds;
-                
-            //         foreach (Spire.Pdf.General.Find.PdfTextFind find in result)
-                    
-            //          {
-                    
-            //             find.ApplyHighLight(Color.Red);
-                  
-            //          }
-                
-            //    }
-            
+          
                 pdf.SaveToFile(outputfile);
             
 
         }
-
 
         public static void PDFToImage(string file, string outputPath, int imageCount,int k)
         {
@@ -2033,7 +2116,7 @@ namespace PDF_Compare_Tool
                 if (File.Exists(file))
                 {
                     // If file found, delete it    
-                    File.Delete(file);
+                  File.Delete(file);
                   //  Console.WriteLine("File deleted.");
                 }
                 //else Console.WriteLine("File not found");
@@ -2120,8 +2203,7 @@ namespace PDF_Compare_Tool
 
                         doc.Add(jpg);
                        
-                        writer.Close();
-                        writer.Dispose();
+                      
                         Deletefile(imageURL);
                         Deletefile(imageURL2);
 
@@ -2160,7 +2242,8 @@ namespace PDF_Compare_Tool
 
                 }
 
-
+                writer.Close();
+              
 
             }
 
@@ -2197,6 +2280,54 @@ namespace PDF_Compare_Tool
             firstImage.Dispose();
             secondImage.Dispose();
             return bitmap;
+        }
+
+        public static List<string> Identifyparagraph(List<string> page)
+        {
+            List<string> ParaPage=new List<string>();
+             int paraCount = 0;
+
+
+            for (int i = 0; i < page.Count; i++)
+            {
+                if (i == 0)
+                {
+                    ParaPage.Add(page[i]);
+                   
+                }
+
+                else if (i == page.Count - 1)
+                {
+                    if (page[i - 1] == "" || string.IsNullOrEmpty(page[i - 1]) || string.IsNullOrWhiteSpace(page[i - 1]))
+                    {
+                        ParaPage.Add(page[i]);
+                        paraCount++;
+                    }
+                    else if (page[i - 1] != "" || string.IsNullOrEmpty(page[i - 1]) == false || string.IsNullOrWhiteSpace(page[i - 1]) == false)
+                    {
+                        ParaPage[paraCount] = ParaPage[paraCount] + page[i];
+                    }
+                }
+
+                else
+                {
+
+                    if (page[i - 1] == "" || string.IsNullOrEmpty(page[i - 1]) || string.IsNullOrWhiteSpace(page[i - 1]))
+                    {
+                        ParaPage.Add(page[i]);
+                        paraCount++;
+                    }
+                    else if (page[i - 1] != "" || string.IsNullOrEmpty(page[i - 1]) == false || string.IsNullOrWhiteSpace(page[i - 1]) == false)
+                    {
+                        ParaPage[paraCount] = ParaPage[paraCount] + page[i];
+                    }
+
+                }
+
+
+            }
+
+            return ParaPage;
         }
 
     }
