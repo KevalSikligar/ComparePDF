@@ -4,10 +4,14 @@ using iTextSharp.text.pdf;
 using PDF_Compare_Tool.ViewModel;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security.AccessControl;
+using System.Security.Permissions;
+using System.Security.Principal;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -20,8 +24,9 @@ namespace PDF_Compare_Tool
     
     class Program
     {
+        
 
-       public static List<HighlightViewModel> highlightPDF1 = new List<HighlightViewModel>();
+        public static List<HighlightViewModel> highlightPDF1 = new List<HighlightViewModel>();
       public  static List<HighlightViewModel> highlightPDF2 = new List<HighlightViewModel>();
        static int  imagePDFCount1 = 0 , imagePDFCount2 = 0;
 
@@ -31,19 +36,26 @@ namespace PDF_Compare_Tool
             
 
             Console.Write("\n START \n");
+
+            var files = ConfigurationSettings.AppSettings["ApplicationName"].ToString();
+
+            string[] filearray = files.Split(',');
+
+            Console.Write(files);
+
             CordsModel cords = new CordsModel();
 
             TextInfo info = new TextInfo();
 
-            Console.Write("\n Enter First PDF File Name \n");
-            string str1 = Console.ReadLine();
+            //Console.Write("\n Enter First PDF File Name \n");
+            //string str1 = Console.ReadLine();
 
 
-            Console.Write("\n Enter Second PDF File Name \n");
-            string str2 = Console.ReadLine();
+            //Console.Write("\n Enter Second PDF File Name \n");
+          //  string str2 = Console.ReadLine();
 
-            var inputFile1 = @"F:\Testfiles\"+str1;
-            var inputFile2 = @"F:\Testfiles\"+str2;
+            var inputFile1 = filearray[0];
+            var inputFile2 = filearray[1];
 
 
 
@@ -53,9 +65,22 @@ namespace PDF_Compare_Tool
             //  PDFToImage(@"F:\Testfiles\50page.pdf", @"F:\Testfiles\PDFImages", 100);
 
             var executableFolderPath = System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+        
             string PDF1Folder = executableFolderPath + @"\PDFData\PDF1";
             string PDF2Folder = executableFolderPath + @"\PDFData\PDF2";
-            
+
+
+            FileIOPermission IF1 = new FileIOPermission(FileIOPermissionAccess.AllAccess, PDF1Folder);
+            FileIOPermission IF2 = new FileIOPermission(FileIOPermissionAccess.AllAccess, PDF2Folder);
+            FileIOPermission IH1 = new FileIOPermission(FileIOPermissionAccess.AllAccess,executableFolderPath + @"\PDFData\HL1");
+            FileIOPermission IH2 = new FileIOPermission(FileIOPermissionAccess.AllAccess, executableFolderPath + @"\PDFData\HL2");
+            FileIOPermission Image1 = new FileIOPermission(FileIOPermissionAccess.AllAccess, executableFolderPath + @"\PDFData\PDFImage1");
+
+            FileIOPermission Image2 = new FileIOPermission(FileIOPermissionAccess.AllAccess, executableFolderPath + @"\PDFData\PDFImage2");
+            FileIOPermission Final = new FileIOPermission(FileIOPermissionAccess.AllAccess, executableFolderPath + @"\PDFData\FinalPDF");
+
+
+
             SplitPDF(inputFile1, PDF1Folder);
             SplitPDF(inputFile2, PDF2Folder);
 
@@ -74,17 +99,21 @@ namespace PDF_Compare_Tool
             for (int i = 1; i <= minFileCount; i++)
             {
                 string newIF1 = PDF1Folder + "\\" + i + ".pdf";
+                FileIOPermission P1 = new FileIOPermission(FileIOPermissionAccess.AllAccess, newIF1);
                 string newIF2 = PDF2Folder + "\\" + i + ".pdf";
+                FileIOPermission P2 = new FileIOPermission(FileIOPermissionAccess.AllAccess, newIF2);
 
                 string newHL1 = executableFolderPath + @"\PDFData\HL1" + "\\" + i + ".pdf";
+                FileIOPermission H1 = new FileIOPermission(FileIOPermissionAccess.AllAccess, newHL1);
                 string newHL2 = executableFolderPath + @"\PDFData\HL2" +"\\" + i + ".pdf";
+                FileIOPermission H2 = new FileIOPermission(FileIOPermissionAccess.AllAccess,  newHL2);
 
 
                 ReadTwoPDF(newIF1, newIF2);
 
-                HighlightSpire(newIF1, newHL1, highlightPDF1);
+                HighlightSpire(newIF1, newHL1, highlightPDF1,1);
 
-                HighlightSpire(newIF2, newHL2, highlightPDF2);
+                HighlightSpire(newIF2, newHL2, highlightPDF2,2);
 
                 PDFToImage(newHL1, executableFolderPath + @"\PDFData\PDFImage1", imagePDFCount1,1);
 
@@ -106,7 +135,7 @@ namespace PDF_Compare_Tool
 
 
             Console.Write("\n \n END ");
-            Console.ReadKey();
+           // Console.ReadKey();
 
         }
 
@@ -2004,7 +2033,7 @@ namespace PDF_Compare_Tool
             }
         }
 
-        public static void HighlightSpire(string inputfile, string outputfile, List<HighlightViewModel> info)
+        public static void HighlightSpire(string inputfile, string outputfile, List<HighlightViewModel> info, int fileNumber)
         {
            // inputfile = @"F:\Testfiles\10page.pdf";
             Spire.Pdf.PdfDocument pdf = new Spire.Pdf.PdfDocument(inputfile);
@@ -2059,10 +2088,12 @@ namespace PDF_Compare_Tool
                     if(count== info[i].PositionNo)
 
                         {
-                            //if (info[i].Color == 'Y')
-                            //find.ApplyHighLight(Color.Yellow);
-                            //else
-                                find.ApplyHighLight(Color.Red);
+                           if(fileNumber==1)
+                                find.ApplyHighLight(Color.LightGreen);
+                           else if(fileNumber == 2)
+                                find.ApplyHighLight(Color.LightSkyBlue);
+                           else
+                                find.ApplyHighLight(Color.LightGreen);
 
                         }
                    
@@ -2103,6 +2134,9 @@ namespace PDF_Compare_Tool
             for(int i=1;i<=numberOfPages;i++)
             {
                 GhostscriptWrapper.GeneratePageThumbs(file, outputPath+@"\"+i+".jpeg", i, numberOfPages, 130, 130);
+
+                FileIOPermission image = new FileIOPermission(FileIOPermissionAccess.AllAccess, outputPath + @"\" + i + ".jpeg");
+
             }
             
 
@@ -2137,6 +2171,7 @@ namespace PDF_Compare_Tool
             var directory = System.IO.Path.GetDirectoryName(path);
 
             PdfWriter writer = PdfWriter.GetInstance(doc, new FileStream(directory + @"\PDFData\FinalPDF\Result.pdf", FileMode.Create));
+            FileIOPermission image = new FileIOPermission(FileIOPermissionAccess.AllAccess, directory + @"\PDFData\FinalPDF\Result.pdf");
 
             doc.Open();
 
@@ -2328,6 +2363,20 @@ namespace PDF_Compare_Tool
             }
 
             return ParaPage;
+        }
+
+        public static void SetPermissions(string dirPath)
+        {
+            DirectoryInfo info = new DirectoryInfo(dirPath);
+            WindowsIdentity self = System.Security.Principal.WindowsIdentity.GetCurrent();
+            DirectorySecurity ds = info.GetAccessControl();
+            ds.AddAccessRule(new FileSystemAccessRule(self.Name,
+            FileSystemRights.FullControl,
+            InheritanceFlags.ObjectInherit |
+            InheritanceFlags.ContainerInherit,
+            PropagationFlags.None,
+            AccessControlType.Allow));
+            info.SetAccessControl(ds);
         }
 
     }
