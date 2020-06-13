@@ -97,6 +97,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PDFData\FinalPDF\Class1.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModel\HighlightViewModel.cs" />
@@ -121,7 +124,6 @@
     <EmbeddedResource Include="Pdf.Net.SDK.licx" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="PDFData\FinalPDF\" />
     <Folder Include="PDFData\HL1\" />
     <Folder Include="PDFData\HL2\" />
     <Folder Include="PDFData\PDF1\" />

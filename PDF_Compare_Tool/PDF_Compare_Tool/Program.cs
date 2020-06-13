@@ -27,8 +27,10 @@ namespace PDF_Compare_Tool
         
 
         public static List<HighlightViewModel> highlightPDF1 = new List<HighlightViewModel>();
-      public  static List<HighlightViewModel> highlightPDF2 = new List<HighlightViewModel>();
-       static int  imagePDFCount1 = 0 , imagePDFCount2 = 0;
+        public  static List<HighlightViewModel> highlightPDF2 = new List<HighlightViewModel>();
+        static int  imagePDFCount1 = 0 , imagePDFCount2 = 0;
+        public static string UserData = "";
+
 
         static TextInfo textInfo = new TextInfo();
         static void Main(string[] args)
@@ -50,25 +52,41 @@ namespace PDF_Compare_Tool
             //Console.Write("\n Enter First PDF File Name \n");
             //string str1 = Console.ReadLine();
 
-
             //Console.Write("\n Enter Second PDF File Name \n");
-          //  string str2 = Console.ReadLine();
+            //  string str2 = Console.ReadLine();
 
             var inputFile1 = filearray[0];
             var inputFile2 = filearray[1];
+            UserData = filearray[2];
 
-
-
+            //var inputFile1 = "F:/5.pdf";
+            //var inputFile2 = "F:/6.pdf";
+            // UserData = "rachana";
 
 
 
             //  PDFToImage(@"F:\Testfiles\50page.pdf", @"F:\Testfiles\PDFImages", 100);
 
             var executableFolderPath = System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-        
+
+
+          //  Directory.CreateDirectory(executableFolderPath + @"\bin\Debug\PDFData");
+
+            executableFolderPath = executableFolderPath + @"\" + UserData;
+
+            Directory.CreateDirectory(executableFolderPath);
+            Directory.CreateDirectory(executableFolderPath+@"\PDFData\PDF1");
+            Directory.CreateDirectory(executableFolderPath+@"\PDFData\PDF2");
+            Directory.CreateDirectory(executableFolderPath+ @"\PDFData\HL1");
+            Directory.CreateDirectory(executableFolderPath+ @"\PDFData\HL2");
+            Directory.CreateDirectory(executableFolderPath+ @"\PDFData\PDFImage1");
+            Directory.CreateDirectory(executableFolderPath+ @"\PDFData\PDFImage2");
+            Directory.CreateDirectory(executableFolderPath+ @"\PDFData\FinalPDF");
+
             string PDF1Folder = executableFolderPath + @"\PDFData\PDF1";
             string PDF2Folder = executableFolderPath + @"\PDFData\PDF2";
 
+          
 
             FileIOPermission IF1 = new FileIOPermission(FileIOPermissionAccess.AllAccess, PDF1Folder);
             FileIOPermission IF2 = new FileIOPermission(FileIOPermissionAccess.AllAccess, PDF2Folder);
@@ -123,17 +141,10 @@ namespace PDF_Compare_Tool
                 Deletefile(newHL2);
                 Deletefile(newIF1);
                 Deletefile(newIF2);
-
-
                 
             }
 
             ImageToPDF();
-
-
-
-
-
             Console.Write("\n \n END ");
            // Console.ReadKey();
 
@@ -2170,6 +2181,7 @@ namespace PDF_Compare_Tool
 
             var directory = System.IO.Path.GetDirectoryName(path);
 
+            directory = directory + @"\" + UserData;
             PdfWriter writer = PdfWriter.GetInstance(doc, new FileStream(directory + @"\PDFData\FinalPDF\Result.pdf", FileMode.Create));
             FileIOPermission image = new FileIOPermission(FileIOPermissionAccess.AllAccess, directory + @"\PDFData\FinalPDF\Result.pdf");
 
